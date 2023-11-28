@@ -3,8 +3,7 @@ package com.example.TicketModule.Entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -15,8 +14,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String firstName;
-    private String lastName;
+    private String userName;
     private String email;
     private String password;
 
@@ -24,10 +22,4 @@ public class User {
     @JoinColumn(name = "department_id")
     private Department departmentId;
 
-
-    public User(Long aLong) {
-    }
-
-    public User(User user) {
-    }
 }

@@ -9,8 +9,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
-    @Query("SELECT COUNT(t) FROM Ticket t WHERE t.projectId.id = :projectId")
-    int countTicketsByProjectId(@Param("projectId") Long projectId);
+//    @Query("SELECT COUNT(t) FROM Ticket t WHERE t.projectId.id = :projectId")
+//    int countTicketsByProjectId(@Param("projectId") Long projectId);
 
-    List<Ticket> findByProjectId_Id(Long projectId);
+    List<Ticket> findByProjectId(Long projectId);
 }

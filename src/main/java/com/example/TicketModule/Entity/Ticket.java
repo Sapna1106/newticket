@@ -11,9 +11,7 @@ import java.time.Instant;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@Getter
-@Setter
-@ToString
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -27,26 +25,16 @@ public class Ticket {
     private String ticketId;
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "created_by_id")
-    private User createdBy;
+    private Long createdBy;
 
     private Instant startDate;
     private Instant endDate;
     private Instant endTime;
 
-
-    @ManyToOne
-    @JoinColumn(name = "project_id")
-    private Project projectId;
+    private Long projectId;
 
     private String status= "To Do";
     private Priority priority= Priority.MEDIUM;
-//    private String blockedBy;
-
-//    @ManyToOne
-//    @JoinColumn(name = "parent_ticket_id")
-//    private Ticket parent;
 
     @ManyToMany
     @JoinTable(
@@ -56,9 +44,7 @@ public class Ticket {
     )
     private List<User> assignee;
 
-    @ManyToOne
-    @JoinColumn(name = "accountable_assignee_id")
-    private User accountableAssignee;
+    private Long accountableAssignee;
 
     private String customFields;
 
@@ -82,24 +68,6 @@ public class Ticket {
     @UpdateTimestamp
     private Instant updatedAt;
 
-    public Ticket(RequestBodyTicket requestBodyTicket) {
-        this.id = requestBodyTicket.getId();
-        this.ticketId = requestBodyTicket.getTicketId();
-        this.name = requestBodyTicket.getName();
-        this.description = requestBodyTicket.getDescription();
-        this.createdBy = new User(); // jay id
-        this.startDate = Instant.now();
-        this.endDate = requestBodyTicket.getEndDate();
-        this.endTime = requestBodyTicket.getEndTime();
-        this.projectId = new Project(requestBodyTicket.getProjectId());
-        this.status = requestBodyTicket.getStatus();
-        this.priority = Priority.valueOf(requestBodyTicket.getPriority().toUpperCase());
-        this.customFields = requestBodyTicket.getCustomFields();
-//        this.accountableAssignee = requestBodyTicket.getAccountableAssignee();
-        this.assignee = requestBodyTicket.getAssignee().stream()
-                .map(User::new)
-                .collect(Collectors.toList());
-    }
 
     public void generateCustomId(String projectInitials, long count) {
         this.ticketId = projectInitials + count;
