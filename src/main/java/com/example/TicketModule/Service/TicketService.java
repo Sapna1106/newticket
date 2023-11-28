@@ -1,6 +1,7 @@
 package com.example.TicketModule.Service;
 
 import com.example.TicketModule.Controller.TicketController;
+import com.example.TicketModule.DTO.ProjectDto;
 import com.example.TicketModule.DTO.RequestBodyTicket;
 import com.example.TicketModule.DTO.TicketResponseDto;
 import com.example.TicketModule.DTO.UserDto;
@@ -17,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
@@ -90,11 +90,8 @@ public class TicketService {
           System.out.println(lastCustomId);
           String projectInitials = lastCustomId.split("-")[0];
           int lastTicketNumber = Integer.parseInt(lastCustomId.split("-")[1]);
-
-          // Increment the number for the new ticket
           int newTicketNumber = lastTicketNumber + 1;
           ticket.setTicketId(projectInitials+"-"+newTicketNumber);
-          // System.out.println(ticket.getCustomId());
 
           List<User> assignees  = new ArrayList<>();
           for(Long userId:newTicket.getAssignee()){
@@ -103,16 +100,13 @@ public class TicketService {
           ticket.setAssignee(assignees);
           ticket = ticketRepository.save(ticket);
           log.info("create servce Completed");
-          TicketResponseDto ticketResponseDto = new TicketResponseDto();
-        ticketResponseDto = ticketResponseDto.convertToDtos(ticket, ticketResponseDto);
-        convertTouser(ticket,ticketResponseDto);
+          TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket);
+        convertToUser(ticket,ticketResponseDto);
           return ticketResponseDto;
 
 
         }else {
           ticket.setTicketId(project.getInitials().toUpperCase()+"-1");
-          // System.out.println("list is  empty");
-          // System.out.println("want to genrated coustomised id: "+project.getInitials().toUpperCase()+"-1");
 
           List<User> assignees  = new ArrayList<>();
           for(Long userId:newTicket.getAssignee()){
@@ -121,9 +115,8 @@ public class TicketService {
           ticket.setAssignee(assignees);
           ticket = ticketRepository.save(ticket);
           log.info("create servce Completed");
-          TicketResponseDto ticketResponseDto = new TicketResponseDto();
-          ticketResponseDto = ticketResponseDto.convertToDtos(ticket, ticketResponseDto);
-          convertTouser(ticket,ticketResponseDto);
+          TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket);
+          convertToUser(ticket,ticketResponseDto);
           return ticketResponseDto;
 
         }
@@ -144,39 +137,44 @@ public class TicketService {
     }
   }
 
-  public Optional<Ticket> getTicketById(Long id) throws TicketNotFoundException {
+  public TicketResponseDto getTicketById(Long id) throws TicketNotFoundException {
     log.info("id" + id);
     Optional<Ticket> existingTicket = ticketRepository.findById(id);
-
+    TicketResponseDto ticketResponseDto = new TicketResponseDto(existingTicket.get());
+    convertToUser(existingTicket.get(),ticketResponseDto);
     if (existingTicket.isPresent()) {
-      return existingTicket;
+      return ticketResponseDto;
     } else {
       throw new TicketNotFoundException("Ticket not found with id: " + id);
     }
   }
 
-  public Ticket updateTicket(RequestBodyTicket requestBodyTicket) throws TicketNotFoundException {
+  public TicketResponseDto updateTicket(RequestBodyTicket requestBodyTicket,Long ticketId) throws TicketNotFoundException {
     log.info("update Ticket Exicutation Started");
     Ticket ticket = requestBodyTicket.convertToEntity(requestBodyTicket);
     Optional<Project> project = projectRepo.findById(requestBodyTicket.getProjectId());
     System.out.println("project is :" + project.get());
-    //        ticket.setProjectId(project.get());
-    Optional<Ticket> existingTicket = ticketRepository.findById(ticket.getId());
+    Optional<Ticket> existingTicket = ticketRepository.findById(ticketId);
+
+    existingTicket.get().setId(ticketId);
     if (existingTicket.isPresent()) {
-      User createdBy = userRepo.findById(requestBodyTicket.getCreatedBy()).get();
-      List<User> assignees = new ArrayList<>();
-      for (Long userId : requestBodyTicket.getAssignee()) {
+      List<User> assignees  = new ArrayList<>();
+      for(Long userId:requestBodyTicket.getAssignee()){
         assignees.add(userRepo.findById(userId).get());
       }
-
-      ticket = ticketRepository.save(ticket);
+      existingTicket.get().setAssignee(assignees);
+      ticket = ticketRepository.save(existingTicket.get());
 
       System.out.println("ticket is " + ticket);
-      return ticket;
+      TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket);
+      convertToUser(existingTicket.get(),ticketResponseDto);
+      return ticketResponseDto;
     } else {
       throw new TicketNotFoundException("Ticket not found with id:  " + ticket.getId());
     }
   }
+
+  public void  clone(Ticket existing,)
 
   public Boolean deleteTicket(Long id) {
     try {
@@ -193,14 +191,29 @@ public class TicketService {
    * @param
    * @return list of tickets
    */
-  //    public List<Ticket> getTicketsByAssignee( String userId) {
-  //        try {
-  //            System.out.println("hi this is find by user id");
-  //            return ticketRepository.findByUsersAssignedTo_Id(userId);
-  //        } catch (Exception e) {
-  //            throw new UserNotFoundException("User not found with ID: " + userId);
-  //        }
-  //    }
+      public List<TicketResponseDto> getTicketsByAssignee( Long userId) {
+          try {
+              System.out.println("hi this is find by user id");
+              List<Ticket> ticketList = ticketRepository.findByAssignee_Id(userId);
+            List<TicketResponseDto> responseTickets =
+                    ticketList.stream()
+                            .map(
+                                    ticket -> {
+                                      try {
+                                        TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket);
+                                        convertToUser(ticket,ticketResponseDto);
+                                        return ticketResponseDto;
+                                      } catch (Exception e) {
+                                        e.printStackTrace();
+                                        return null;
+                                      }
+                                    })
+                            .collect(Collectors.toList());
+            return responseTickets;
+          } catch (Exception e) {
+              throw new UserNotFoundException("User not found with ID: " + userId);
+          }
+      }
 
       public List<TicketResponseDto> getTicketsByProject( Long projectId) {
           List<Ticket> ticketList = ticketRepository.findByProjectId(projectId);
@@ -209,9 +222,8 @@ public class TicketService {
             .map(
                 ticket -> {
                   try {
-                    TicketResponseDto ticketResponseDto = new TicketResponseDto();
-                    ticketResponseDto = ticketResponseDto.convertToDtos(ticket,ticketResponseDto);
-                    convertTouser(ticket,ticketResponseDto);
+                    TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket);
+                    convertToUser(ticket,ticketResponseDto);
                     return ticketResponseDto;
                   } catch (Exception e) {
                     e.printStackTrace();
@@ -222,15 +234,7 @@ public class TicketService {
         return responseTickets;
       }
 
-  //    public List<Ticket> getTicketsByParent( String parentId) {
-  //        return ticketRepository.findByParent_Id(parentId);
-  //    }
-  //
-  //        public void deleteTicketsByProjectId(String projectId) {
-  //            ticketRepository.deleteByProjectIn_Id(projectId);
-  //        }
-
-  public void convertTouser(Ticket ticket, TicketResponseDto ticketResponseDto) {
+  public void convertToUser(Ticket ticket, TicketResponseDto ticketResponseDto) {
     User createdBy = userRepo.findById(ticket.getCreatedBy()).get();
     User assocutableAsigne = userRepo.findById(ticket.getAccountableAssignee()).get();
     ticketResponseDto.setCreatedBy(
@@ -244,6 +248,8 @@ public class TicketService {
     for (User user : ticket.getAssignee()) {
       userDtos.add(new UserDto(user.getId(), user.getUserName(), user.getEmail()));
     }
+    Project project = projectRepo.findById(ticket.getProjectId()).get();
+    ticketResponseDto.setProject(new ProjectDto(project.getId(),project.getName()));
     ticketResponseDto.setAssigneeName(userDtos);
     return;
   }

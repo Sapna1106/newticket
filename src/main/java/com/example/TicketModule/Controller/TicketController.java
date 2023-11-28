@@ -33,8 +33,6 @@ public class TicketController {
   @PostMapping("/addTicket")
   public ResponseEntity<?> createTicket(@RequestBody RequestBodyTicket newTicket) {
     log.info("inside create ticket");
-    //        Map<String, Object> response = new HashMap<>();
-    //        HttpStatus status = null;
     try {
       log.info("inside ticket creation try block");
       TicketResponseDto createdTicket = ticketService.createTicket(newTicket);
@@ -79,12 +77,9 @@ public class TicketController {
     HttpStatus status = null;
 
     try {
-      Optional<Ticket> ticket = ticketService.getTicketById(id);
-      TicketResponseDto ticketResponseDto = new TicketResponseDto();
-      ticketResponseDto = ticketResponseDto.convertToDtos(ticket.get(), ticketResponseDto);
-      ticketService.convertTouser(ticket.get(),ticketResponseDto);
+      TicketResponseDto ticket = ticketService.getTicketById(id);
       response.put("message", "Success");
-      response.put("data", ticketResponseDto);
+      response.put("data", ticket);
       status = HttpStatus.OK;
     } catch (TicketNotFoundException e) {
       response.put("message", e.getMessage());
@@ -101,18 +96,16 @@ public class TicketController {
 
   @PutMapping("/{id}")
   public ResponseEntity<Map<String, Object>> updateTicket(
-      @RequestBody RequestBodyTicket requestBodyTicket) {
+      @RequestBody RequestBodyTicket requestBodyTicket,@PathVariable Long id) {
     log.info("inside update ticket method");
     Map<String, Object> response = new HashMap<>();
     HttpStatus status = HttpStatus.CREATED;
     // System.out.println(updatedTickket);
     try {
-      Ticket updatedTicket = ticketService.updateTicket(requestBodyTicket);
-      TicketResponseDto ticketResponseDto = new TicketResponseDto();
-      ticketResponseDto = ticketResponseDto.convertToDtos(updatedTicket, ticketResponseDto);
+      TicketResponseDto updatedTicket = ticketService.updateTicket(requestBodyTicket,id);
       if (updatedTicket != null) {
         response.put("message", "Ticket updated successfully");
-        response.put("data", ticketResponseDto);
+        response.put("data", updatedTicket);
         status = HttpStatus.OK;
       } else {
         response.put("message", "Ticket not found with id: " + updatedTicket.getId());
@@ -125,6 +118,7 @@ public class TicketController {
       status = HttpStatus.NOT_FOUND;
     } catch (Exception e) {
       response.put("message", "An error occurred");
+      System.out.println(e);
       response.put("data", null);
       log.info(String.valueOf(e));
       status = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -185,29 +179,29 @@ public class TicketController {
     }
   }
 
-  //    @GetMapping("/byAssignee/{userId}")
-  //    public ResponseEntity<Map<String, Object>> getTicketsByAssignee(@PathVariable String userId)
-  // {
-  //        Map<String, Object> response = new HashMap<>();
-  //        HttpStatus status;
-  //
-  //        try {
-  //            List<Ticket> tickets = ticketService.getTicketsByAssignee(userId);
-  //            response.put("message", "Success");
-  //            response.put("data", tickets);
-  //            status = HttpStatus.OK;
-  //        } catch (UserNotFoundException e) {
-  //            response.put("message", e.getMessage());
-  //            response.put("data", null);
-  //            status = HttpStatus.NOT_FOUND;
-  //        } catch (Exception e) {
-  //            response.put("message", "An error occurred");
-  //            response.put("data", null);
-  //            status = HttpStatus.INTERNAL_SERVER_ERROR;
-  //        }
-  //
-  //        return new ResponseEntity<>(response, status);
-  //    }
+      @GetMapping("/byAssignee/{userId}")
+      public ResponseEntity<Map<String, Object>> getTicketsByAssignee(@PathVariable Long userId)
+   {
+          Map<String, Object> response = new HashMap<>();
+          HttpStatus status;
+
+          try {
+              List<TicketResponseDto> tickets = ticketService.getTicketsByAssignee(userId);
+              response.put("message", "Success");
+              response.put("data", tickets);
+              status = HttpStatus.OK;
+          } catch (UserNotFoundException e) {
+              response.put("message", e.getMessage());
+              response.put("data", null);
+              status = HttpStatus.NOT_FOUND;
+          } catch (Exception e) {
+              response.put("message", "An error occurred");
+              response.put("data", null);
+              status = HttpStatus.INTERNAL_SERVER_ERROR;
+          }
+
+          return new ResponseEntity<>(response, status);
+      }
 
       @GetMapping("/byProject/{projectId}")
       public ResponseToSend<List<TicketResponseDto>> getTicketsByProject(@PathVariable Long projectId) {

@@ -67,4 +67,16 @@ public class TicketResponseDto {
 //    System.out.println("done");
     return ticketResponseDto;
   }
+
+  public TicketResponseDto(Ticket ticket){
+    this.id = ticket.getId();
+    this.name = ticket.getName();
+    this.ticketId = ticket.getTicketId();
+    this.description = ticket.getDescription();
+    this.startDate = ticket.getStartDate();
+    this.endDate = ticket.getEndDate();
+    this.endTime = ticket.getEndTime();
+    this.status = ticket.getStatus();
+    this.priority = ticket.getPriority();
+  }
 }

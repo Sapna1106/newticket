@@ -13,4 +13,6 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 //    int countTicketsByProjectId(@Param("projectId") Long projectId);
 
     List<Ticket> findByProjectId(Long projectId);
+
+    List<Ticket> findByAssignee_Id(Long assigneeId);
 }
