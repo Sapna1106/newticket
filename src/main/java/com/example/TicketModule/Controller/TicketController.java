@@ -31,7 +31,7 @@ public class TicketController {
   @Autowired private TicketService ticketService;
 
   @PostMapping("/addTicket")
-  public ResponseEntity<?> createTicket(@RequestBody RequestBodyTicket newTicket) {
+  public ResponseEntity<ApiResponse> createTicket(@RequestBody RequestBodyTicket newTicket) {
     log.info("inside create ticket");
     try {
       log.info("inside ticket creation try block");
@@ -41,90 +41,66 @@ public class TicketController {
       return ResponseEntity.ok()
           .body(
               new ApiResponse<TicketResponseDto>(
-                  "Ticket created successfully", createdTicket, 200));
+                  "Ticket created successfully", createdTicket, "OK"));
     } catch (TicketCreationException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(new ApiResponse<>(e.getMessage(), null, 405));
+          .body(new ApiResponse<>(e.getMessage(), null, "BAD_REQUEST"));
     } catch (Exception e) {
       System.out.println(e);
-      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-          .body(new ApiResponse<>("An error occurred while creating a new ticket", null, 405));
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(new ApiResponse<>("An error occurred while creating a new ticket", null, "INTERNAL_SERVER_ERROR"));
     }
   }
 
   @GetMapping
-  public ResponseEntity<?> getTickets() {
+  public ResponseEntity<ApiResponse> getTickets() {
     log.info("inside get all tickets");
     try {
-      List<Ticket> tickets = ticketService.getTickets();
+      List<TicketResponseDto> tickets = ticketService.getTickets();
       return ResponseEntity.ok()
-              .body(
-                      new ApiResponse<List<Ticket>>(
-                              "Ticket created successfully", tickets, 200));
+          .body(
+              new ApiResponse<List<TicketResponseDto>>(
+                  "List of tickets Get successfully", tickets, "Ok"));
     } catch (TicketNotFoundException e) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-              .body(new ApiResponse<>(e.getMessage(), null, 405));
+          .body(new ApiResponse<>(e.getMessage(), null, "BAD_REQUEST"));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-              .body(new ApiResponse<>("An error occurred while creating a new ticket", null, 405));
+          .body(new ApiResponse<>("An error occurred while getting tickets ticket", null, "INTERNAL_SERVER_ERROR"));
     }
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<Map<String, Object>> getTicketById(@PathVariable Long id) {
+  public ResponseEntity<ApiResponse> getTicketById(@PathVariable Long id) {
     log.info("inside get Tickets by id");
-    Map<String, Object> response = new HashMap<>();
-    HttpStatus status = null;
-
     try {
       TicketResponseDto ticket = ticketService.getTicketById(id);
-      response.put("message", "Success");
-      response.put("data", ticket);
-      status = HttpStatus.OK;
+      return ResponseEntity.ok()
+          .body(new ApiResponse<TicketResponseDto>("Ticket Get successfully", ticket, "OK"));
     } catch (TicketNotFoundException e) {
-      response.put("message", e.getMessage());
-      response.put("data", null);
-      status = HttpStatus.NOT_FOUND;
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ApiResponse<>(e.getMessage(), null, "BAD_REQUEST"));
     } catch (Exception e) {
-      response.put("message", "An error occurred");
-      response.put("data", null);
-      status = HttpStatus.INTERNAL_SERVER_ERROR;
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiResponse<>("An error occurred while getting tickets", null, "INTERNAL_SERVER_ERROR"));
     }
-
-    return new ResponseEntity<>(response, status);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Map<String, Object>> updateTicket(
-      @RequestBody RequestBodyTicket requestBodyTicket,@PathVariable Long id) {
+  public ResponseEntity<ApiResponse> updateTicket(
+      @RequestBody RequestBodyTicket requestBodyTicket, @PathVariable Long id) {
     log.info("inside update ticket method");
-    Map<String, Object> response = new HashMap<>();
-    HttpStatus status = HttpStatus.CREATED;
-    // System.out.println(updatedTickket);
     try {
-      TicketResponseDto updatedTicket = ticketService.updateTicket(requestBodyTicket,id);
-      if (updatedTicket != null) {
-        response.put("message", "Ticket updated successfully");
-        response.put("data", updatedTicket);
-        status = HttpStatus.OK;
-      } else {
-        response.put("message", "Ticket not found with id: " + updatedTicket.getId());
-        response.put("data", null);
-        status = HttpStatus.NOT_FOUND;
-      }
+      TicketResponseDto updatedTicket = ticketService.updateTicket(requestBodyTicket, id);
+          return ResponseEntity.status(HttpStatus.CREATED)
+                  .body(new ApiResponse<TicketResponseDto>("Ticket updated successfully", updatedTicket, "CREATED"));
     } catch (TicketNotFoundException e) {
-      response.put("message", e.getMessage());
-      response.put("data", null);
-      status = HttpStatus.NOT_FOUND;
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ApiResponse<>(e.getMessage(), null, "BAD_REQUEST"));
     } catch (Exception e) {
-      response.put("message", "An error occurred");
-      System.out.println(e);
-      response.put("data", null);
-      log.info(String.valueOf(e));
-      status = HttpStatus.INTERNAL_SERVER_ERROR;
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ApiResponse<>("An error occurred while updating ticket", null, "INTERNAL_SERVER_ERROR"));
     }
-
-    return new ResponseEntity<>(response, status);
   }
 
   //    @PutMapping("/{id}/otherLinks")
@@ -163,57 +139,50 @@ public class TicketController {
    * @return
    */
   @DeleteMapping("/{id}")
-  public ResponseToSend<?> deleteTicket(@PathVariable Long id) {
+  public ResponseEntity<ApiResponse> deleteTicket(@PathVariable Long id) {
     log.info("inside delete ticket");
     try {
-      boolean status = ticketService.deleteTicket(id);
-      if (status) {
-        return new ResponseToSend<>(
-            "Ticket with ID " + id + " has been deleted.", null, HttpStatus.OK);
-      } else {
-        return new ResponseToSend<>(
-            "Error occurred while deleting.", null, HttpStatus.INTERNAL_SERVER_ERROR);
-      }
-    } catch (Exception e) {
-      return new ResponseToSend<>("An error occurred", null, HttpStatus.INTERNAL_SERVER_ERROR);
+      ticketService.deleteTicket(id);
+      return ResponseEntity.ok()
+              .body(new ApiResponse<>("Ticket updated successfully", false, "OK"));
+
+    }
+    catch(TicketNotFoundException e){
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+              .body(new ApiResponse<>(e.getMessage(), false, "NOT_FOUND"));
+    }
+    catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .body(new ApiResponse<>("Error occure while deleting ticket", false, "INTERNAL_SERVER_ERROR"));
     }
   }
 
-      @GetMapping("/byAssignee/{userId}")
-      public ResponseEntity<Map<String, Object>> getTicketsByAssignee(@PathVariable Long userId)
-   {
-          Map<String, Object> response = new HashMap<>();
-          HttpStatus status;
+  @GetMapping("/byAssignee/{userId}")
+  public ResponseEntity<ApiResponse> getTicketsByAssignee(@PathVariable Long userId) {
+    try {
+      List<TicketResponseDto> tickets = ticketService.getTicketsByAssignee(userId);
+      return ResponseEntity.ok()
+              .body(new ApiResponse<List<TicketResponseDto>>("Ticket get By Assignee successfully", tickets, "Ok"));
+    } catch (UserNotFoundException e) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+              .body(new ApiResponse<>(e.getMessage(), null, "NOT_FOUND"));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .body(new ApiResponse<>("Error occure while getting tickets by assigne Id", false, "INTERNAL_SERVER_ERROR"));
+    }
+  }
 
-          try {
-              List<TicketResponseDto> tickets = ticketService.getTicketsByAssignee(userId);
-              response.put("message", "Success");
-              response.put("data", tickets);
-              status = HttpStatus.OK;
-          } catch (UserNotFoundException e) {
-              response.put("message", e.getMessage());
-              response.put("data", null);
-              status = HttpStatus.NOT_FOUND;
-          } catch (Exception e) {
-              response.put("message", "An error occurred");
-              response.put("data", null);
-              status = HttpStatus.INTERNAL_SERVER_ERROR;
-          }
-
-          return new ResponseEntity<>(response, status);
-      }
-
-      @GetMapping("/byProject/{projectId}")
-      public ResponseToSend<List<TicketResponseDto>> getTicketsByProject(@PathVariable Long projectId) {
-          log.info("get tickets list  by project id" );
-          try {
-              List<TicketResponseDto> tickets = ticketService.getTicketsByProject(projectId);
-              return new ResponseToSend<>("Success", tickets, HttpStatus.OK);
-          } catch (Exception e) {
-              return new ResponseToSend<>("An error occurred", null,
-   HttpStatus.INTERNAL_SERVER_ERROR);
-          }
-      }
+  @GetMapping("/byProject/{projectId}")
+  public ResponseEntity<ApiResponse> getTicketsByProject(@PathVariable Long projectId) {
+    log.info("get tickets list  by project id");
+    try {
+      List<TicketResponseDto> tickets = ticketService.getTicketsByProject(projectId);
+      return ResponseEntity.ok().body(new ApiResponse<List<TicketResponseDto>>("",tickets,"OK"));
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+              .body(new ApiResponse<>("Error occure while getting tickets by assigne Id", null, "INTERNAL_SERVER_ERROR"));
+    }
+  }
 
   @PostMapping("/testPost")
   public ResponseEntity<String> testPost(@RequestBody RequestBodyTicket newTicket) {

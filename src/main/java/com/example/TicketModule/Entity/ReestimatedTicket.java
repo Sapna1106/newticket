@@ -22,13 +22,10 @@ public class ReestimatedTicket {
 
     @ManyToOne
     @JoinColumn(name = "ticket_id")
-    private Ticket ticketId;
+    private Ticket ticket;
 
-    @ManyToOne
-    @JoinColumn(name = "reestimated_by_id")
-    private User reestimatedBy;
+    private Long reestimatedBy;
 
-    @ManyToOne
-    @JoinColumn(name = "assigned_to_id")
-    private User assignedTo;
+
+    private Long assignedTo;
 }

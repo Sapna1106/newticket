@@ -1,16 +1,9 @@
 package com.example.TicketModule.DTO;
 
 import com.example.TicketModule.Entity.ReestimatedTicket;
-import com.example.TicketModule.Entity.Ticket;
-import com.example.TicketModule.Entity.User;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -28,7 +21,7 @@ public class ReestimatedTicketDTO {
 
     public ReestimatedTicketDTO(ReestimatedTicket reestimatedTicket) {
         this.id = reestimatedTicket.getId();
-        this.ticketId = reestimatedTicket.getTicketId().getId();
+        this.ticketId = reestimatedTicket.getTicket().getId();
         this.status=reestimatedTicket.getStatus();
         this.reason = reestimatedTicket.getReason();
         this.denyReason = reestimatedTicket.getDenyReason();

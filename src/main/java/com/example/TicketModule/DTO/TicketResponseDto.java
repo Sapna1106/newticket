@@ -1,24 +1,15 @@
 package com.example.TicketModule.DTO;
 
-import com.example.TicketModule.Entity.Project;
+import com.example.TicketModule.Entity.CustomField;
 import com.example.TicketModule.Entity.Ticket;
-import com.example.TicketModule.Entity.User;
 import com.example.TicketModule.Enum.Priority;
 import com.example.TicketModule.Repository.UserRepository;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 @Data
 public class TicketResponseDto {
@@ -41,6 +32,8 @@ public class TicketResponseDto {
   private UserDto accountableAssigneeName;
 
   private String customFields;
+
+  private List<CustomField> customFieldList;
 
   @Autowired private UserRepository userRepo;
 

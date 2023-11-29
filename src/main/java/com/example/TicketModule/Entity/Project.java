@@ -24,7 +24,7 @@ public class Project {
     private List<Ticket> tickets;
 
     @OneToMany(mappedBy = "projectId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CustomizedField> customizedFields;
+    private List<CustomField> customizedFields;
 
     @ManyToOne
     @JoinColumn(name= "department_id")
