@@ -21,7 +21,7 @@ public class ReestimatedTicketResponseDTO {
 
     public ReestimatedTicketResponseDTO(ReestimatedTicket reestimatedTicket) {
         this.id = reestimatedTicket.getId();
-        this.ticketId = reestimatedTicket.getTicket().getId();
+        if(reestimatedTicket.getTicket() != null) this.ticketId = reestimatedTicket.getTicket().getId();
         this.status=reestimatedTicket.getStatus();
         this.reason = reestimatedTicket.getReason();
         this.denyReason = reestimatedTicket.getDenyReason();

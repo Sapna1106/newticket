@@ -5,6 +5,7 @@ import com.example.TicketModule.DTO.ProjectDto;
 import com.example.TicketModule.DTO.ProjectResponseDto;
 import com.example.TicketModule.Entity.CustomField;
 import com.example.TicketModule.Entity.Project;
+import com.example.TicketModule.Exception.CustomFieldNameAlreadyPresent;
 import com.example.TicketModule.Exception.CustomeFieldNotFoundException;
 import com.example.TicketModule.Exception.ProjectNotFoundException;
 import com.example.TicketModule.Service.ProjectService;
@@ -54,14 +55,14 @@ public class ProjectController {
           projectService.updateProjectWithCustomField(id, customField);
       return ResponseEntity.status(HttpStatus.CREATED)
           .body(new ApiResponse<>("CustomField Add to the Project", projectResponseDto, "created"));
-    } catch (ProjectNotFoundException e) {
+    } catch (ProjectNotFoundException | CustomFieldNameAlreadyPresent e) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND)
           .body(new ApiResponse<>(e.getMessage(), null, "NOT_FOUND"));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(
               new ApiResponse<>(
-                  "Error occure while getting tickets by assigne Id",
+                  "Error occur while getting tickets by assigne Id",
                   false,
                   "INTERNAL_SERVER_ERROR"));
     }

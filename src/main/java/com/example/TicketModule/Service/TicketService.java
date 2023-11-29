@@ -92,7 +92,9 @@ public class TicketService {
           ticket.setTicketId(projectInitials + "-" + newTicketNumber);
           List<User> assignees = new ArrayList<>();
           for (Long userId : newTicket.getAssignee()) {
-            assignees.add(userRepo.findById(userId).get());
+            User user = userRepo.findById(userId).orElse(null);
+            if(user != null)
+              assignees.add(user);
           }
           ticket.setAssignee(assignees);
           ticket = ticketRepository.save(ticket);
@@ -178,7 +180,9 @@ public class TicketService {
           log.info("TicketService : Ticket Found With the Id ");
           List<User> assignees = new ArrayList<>();
           for (Long userId : requestBodyTicket.getAssignee()) {
-            assignees.add(userRepo.findById(userId).get());
+            User user = userRepo.findById(userId).orElse(null);
+            if(user != null)
+              assignees.add(user);
           }
           existingTicket.get().setAssignee(assignees);
           clone(existingTicket.get(), ticket);
@@ -209,6 +213,7 @@ public class TicketService {
     existing.setCreatedBy(updated.getCreatedBy());
     existing.setDescription(updated.getDescription());
     existing.setAccountableAssignee(updated.getAccountableAssignee());
+    existing.setCustomFields(updated.getCustomFields());
   }
 
   public void deleteTicket(Long id) {

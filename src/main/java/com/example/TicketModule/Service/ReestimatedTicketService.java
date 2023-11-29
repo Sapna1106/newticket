@@ -35,7 +35,9 @@ public class ReestimatedTicketService {
         log.info("Reestimated Ticket Service : create reestimation execution started");
         ReestimatedTicket newReestimatedTicket= reestimatedTicket.convertToEntity(reestimatedTicket);
         Optional<Ticket> currentTicket = ticketRepository.findById(id);
-        ReestimatedTicket ticketId= reestimatedTicketRepository.findByTicketId(currentTicket.get());
+        System.out.println("hii"+currentTicket.get());
+        ReestimatedTicket ticketId= reestimatedTicketRepository.findByTicket(currentTicket.get());
+        System.out.println(ticketId);
         if(ticketId == null){
             try {
                 log.info("Reestimated Ticket Service : inside try");
@@ -98,6 +100,7 @@ public class ReestimatedTicketService {
         try {
             log.info("Reestimated Ticket Service : inside try");
             List<ReestimatedTicket> reestimatedTickets = reestimatedTicketRepository.findByAssignedTo(id);
+            System.out.println(reestimatedTickets);
             List<ReestimatedTicketResponseDTO> reestimatedTicketDTO =
                     reestimatedTickets.stream()
                             .map(
@@ -160,11 +163,12 @@ public class ReestimatedTicketService {
     }
 
     public void convertToUser(ReestimatedTicket ticket, ReestimatedTicketResponseDTO ticketResponseDto) {
+        log.info("Convert To started");
         User assignedTo = userRepository.findById(ticket.getAssignedTo()).get();
         User reestimatedBy = userRepository.findById(ticket.getReestimatedBy()).get();
         ticketResponseDto.setAssignedToName(new UserDto( assignedTo.getId(), assignedTo.getUserName(), assignedTo.getEmail()));
         ticketResponseDto.setReestimatedByName(new UserDto( reestimatedBy.getId(), reestimatedBy.getUserName(), reestimatedBy.getEmail()));
-
+        log.info("Convert To Ended");
     }
 
 }

@@ -1,7 +1,5 @@
 package com.example.TicketModule;
 
-import com.example.TicketModule.DTO.ReestimatedTicketDTO;
-import com.example.TicketModule.Entity.ReestimatedTicket;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.modelmapper.ModelMapper;

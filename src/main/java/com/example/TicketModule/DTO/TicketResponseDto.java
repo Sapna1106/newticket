@@ -1,16 +1,13 @@
 package com.example.TicketModule.DTO;
-
 import com.example.TicketModule.Entity.CustomField;
 import com.example.TicketModule.Entity.Ticket;
 import com.example.TicketModule.Enum.Priority;
 import com.example.TicketModule.Repository.UserRepository;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-
 @Data
 public class TicketResponseDto {
   private Long id;
@@ -18,25 +15,17 @@ public class TicketResponseDto {
   private String name;
   private String description;
   private UserDto createdBy;
-
   private Instant startDate;
   private Instant endDate;
   private Instant endTime;
-
   private ProjectDto project;
-
   private String status = "To Do";
   private Priority priority = Priority.MEDIUM;
   private List<UserDto> assigneeName = new ArrayList<>();
-
   private UserDto accountableAssigneeName;
-
   private String customFields;
-
   private List<CustomField> customFieldList;
-
   @Autowired private UserRepository userRepo;
-
   public TicketResponseDto convertToDtos(Ticket ticket, TicketResponseDto ticketResponseDto) {
     System.out.println("Hello");
     ticketResponseDto.setId(ticket.getId());
@@ -60,7 +49,6 @@ public class TicketResponseDto {
 //    System.out.println("done");
     return ticketResponseDto;
   }
-
   public TicketResponseDto(Ticket ticket){
     this.id = ticket.getId();
     this.name = ticket.getName();
@@ -71,5 +59,6 @@ public class TicketResponseDto {
     this.endTime = ticket.getEndTime();
     this.status = ticket.getStatus();
     this.priority = ticket.getPriority();
+    this.customFields = ticket.getCustomFields();
   }
 }

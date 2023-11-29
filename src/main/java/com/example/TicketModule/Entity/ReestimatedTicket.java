@@ -21,7 +21,7 @@ public class ReestimatedTicket {
     private String status = "Pending";
 
     @ManyToOne
-    @JoinColumn(name = "ticket_id")
+    @JoinColumn(name = "ticket")
     private Ticket ticket;
 
     private Long reestimatedBy;
