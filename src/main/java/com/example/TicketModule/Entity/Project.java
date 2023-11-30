@@ -23,12 +23,11 @@ public class Project {
     @OneToMany(mappedBy = "projectId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Ticket> tickets;
 
-    @OneToMany(mappedBy = "projectId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CustomField> customizedFields;
+//    @OneToMany(mappedBy = "projectId", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<CustomField> customizedFields;
 
-    @ManyToOne
-    @JoinColumn(name= "department_id")
-    private Department departmentId;
+
+    private Long departmentId;
 
     public Project(Long projectId) {
     }

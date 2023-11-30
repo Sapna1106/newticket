@@ -17,7 +17,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -26,25 +28,25 @@ public class ProjectController {
   private static final Logger log = LoggerFactory.getLogger(ProjectController.class);
   @Autowired private ProjectService projectService;
 
-  //    @PostMapping()
-  //    public Project createProject(@RequestBody Project project) {
-  //        return projectService.createProject(project);
-  //    }
+      @PostMapping()
+      public Project createProject(@RequestBody Project project) {
+          return projectService.createProject(project);
+      }
 
-  //    @GetMapping
-  //    public List<Project> getprojects() {
-  //        return projectService.getAllProjects();
-  //    }
+      @GetMapping
+      public List<Project> getprojects() {
+          return projectService.getAllProjects();
+      }
 
-  //    @GetMapping("/{id}")
-  //    public Optional<Project> getProjectById(@PathVariable String id) {
-  //        return projectService.getProjectById(id);
-  //    }
+      @GetMapping("/{id}")
+      public Optional<Project> getProjectById(@PathVariable Long id) {
+          return projectService.getProjectById(id);
+      }
 
-  //    @DeleteMapping("/{id}")
-  //    public void deleteProjectById(@PathVariable String id) {
-  //        projectService.deleteProjectById(id);
-  //    }
+      @DeleteMapping("/{id}")
+      public void deleteProjectById(@PathVariable Long id) {
+          projectService.deleteProjectById(id);
+      }
 
   @PutMapping("/{id}/customfields")
   public ResponseEntity<ApiResponse<?>> updateProjectWithCustomField(

@@ -18,10 +18,10 @@ public class Department {
 
     private String name;
 
-    @OneToMany(mappedBy = "departmentId")
+    @OneToMany(mappedBy = "departmentId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Project> projects;
 
-    @OneToMany(mappedBy = "departmentId")
+    @OneToMany(mappedBy = "departmentId", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<User> users;
 
     public Department(Long id) {

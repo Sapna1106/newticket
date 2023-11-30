@@ -23,6 +23,23 @@ public class ProjectService {
     private CustomFieldRepository customFieldRepo;
     @Autowired
     private TicketRepository ticketRepo;
+
+    public Project createProject(Project project) {
+        return projectRepo.save(project);
+    }
+
+    public List<Project> getAllProjects() {
+        return projectRepo.findAll();
+    }
+
+    public Optional<Project> getProjectById(Long id) {
+        return projectRepo.findById(id);
+    }
+
+    public void deleteProjectById(Long id) {
+        projectRepo.deleteById(id);
+    }
+
     public ProjectResponseDto updateProjectWithCustomField(Long projectId, CustomField customField){
          try{
              Optional<CustomField> customField1 = customFieldRepo.findByFieldName(customField.getFieldName());

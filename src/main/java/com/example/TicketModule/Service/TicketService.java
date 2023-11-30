@@ -10,7 +10,6 @@ import com.example.TicketModule.Entity.Project;
 import com.example.TicketModule.Entity.Ticket;
 import com.example.TicketModule.Entity.User;
 import com.example.TicketModule.Exception.ProjectNotFoundException;
-import com.example.TicketModule.Exception.TicketCreationException;
 import com.example.TicketModule.Exception.TicketNotFoundException;
 import com.example.TicketModule.Exception.UserNotFoundException;
 import com.example.TicketModule.Repository.CustomFieldRepository;
@@ -25,6 +24,7 @@ import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -74,7 +74,7 @@ public class TicketService {
   //  }
 
   public TicketResponseDto createTicket(RequestBodyTicket newTicket) {
-    log.info("TicketService : createTicket Execution started");
+    log.info("TicketService : createTicket Execution started"+newTicket);
     try {
       Ticket ticket = newTicket.convertToEntity(newTicket);
       Project project = projectRepo.findById(newTicket.getProjectId()).orElse(null);
@@ -126,10 +126,11 @@ public class TicketService {
     }
   }
 
-  public List<TicketResponseDto> getTickets() {
-    log.info("TicketService : getTickets Execution Started");
+  public List<TicketResponseDto> getAllTickets() {
+    log.info("TicketService : getAllTickets Execution Started");
     try {
       List<Ticket> ticketList = ticketRepository.findAll();
+      log.info("list "+ticketList);
       List<TicketResponseDto> responseTickets =
           ticketList.stream()
               .map(
@@ -137,6 +138,7 @@ public class TicketService {
                     try {
                       TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket);
                       convertToUser(ticket, ticketResponseDto);
+                      log.info("ticketResponseDto "+ticketResponseDto);
                       return ticketResponseDto;
                     } catch (Exception e) {
                       e.printStackTrace();
@@ -256,7 +258,8 @@ public class TicketService {
                       return null;
                     }
                   })
-              .collect(Collectors.toList());
+                  .filter(Objects::nonNull)
+                  .collect(Collectors.toList());
       log.info("TicketService : deleteTicket Execution Ended");
       return responseTickets;
     } catch (Exception e) {

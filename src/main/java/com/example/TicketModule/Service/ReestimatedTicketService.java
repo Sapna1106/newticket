@@ -163,12 +163,12 @@ public class ReestimatedTicketService {
     }
 
     public void convertToUser(ReestimatedTicket ticket, ReestimatedTicketResponseDTO ticketResponseDto) {
-        log.info("Convert To started");
+        log.info("Convert To started"+ticketResponseDto);
         User assignedTo = userRepository.findById(ticket.getAssignedTo()).get();
         User reestimatedBy = userRepository.findById(ticket.getReestimatedBy()).get();
         ticketResponseDto.setAssignedToName(new UserDto( assignedTo.getId(), assignedTo.getUserName(), assignedTo.getEmail()));
         ticketResponseDto.setReestimatedByName(new UserDto( reestimatedBy.getId(), reestimatedBy.getUserName(), reestimatedBy.getEmail()));
-        log.info("Convert To Ended");
+        log.info("Convert To Ended"+ticketResponseDto);
     }
 
 }

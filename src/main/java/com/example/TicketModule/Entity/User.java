@@ -18,8 +18,7 @@ public class User {
     private String email;
     private String password;
 
-    @ManyToOne
-    @JoinColumn(name = "department_id")
-    private Department departmentId;
+
+    private Long departmentId;
 
 }

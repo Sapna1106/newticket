@@ -1,12 +1,10 @@
 package com.example.TicketModule.Controller;
 
 import com.example.TicketModule.DTO.ApiResponse;
-import com.example.TicketModule.DTO.ResponseToSend;
 import com.example.TicketModule.DTO.TicketResponseDto;
-import com.example.TicketModule.Exception.TicketCreationException;
+import com.example.TicketModule.Exception.ProjectNotFoundException;
 import com.example.TicketModule.Exception.TicketNotFoundException;
 import com.example.TicketModule.Exception.UserNotFoundException;
-import com.example.TicketModule.Repository.TicketRepository;
 import com.example.TicketModule.Service.TicketService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,13 +13,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.TicketModule.Entity.Ticket;
 import com.example.TicketModule.DTO.RequestBodyTicket;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -30,7 +24,7 @@ public class TicketController {
   private static final Logger log = LoggerFactory.getLogger(TicketController.class);
   @Autowired private TicketService ticketService;
 
-  @PostMapping("/addTicket")
+  @PostMapping
   public ResponseEntity<ApiResponse> createTicket(@RequestBody RequestBodyTicket newTicket) {
     log.info("inside create ticket");
     try {
@@ -42,7 +36,8 @@ public class TicketController {
           .body(
               new ApiResponse<TicketResponseDto>(
                   "Ticket created successfully", createdTicket, "OK"));
-    } catch (TicketCreationException e) {
+    } catch (ProjectNotFoundException e) {
+      log.error(e.getMessage());
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(new ApiResponse<>(e.getMessage(), null, "BAD_REQUEST"));
     } catch (Exception e) {
@@ -56,7 +51,7 @@ public class TicketController {
   public ResponseEntity<ApiResponse> getTickets() {
     log.info("inside get all tickets");
     try {
-      List<TicketResponseDto> tickets = ticketService.getTickets();
+      List<TicketResponseDto> tickets = ticketService.getAllTickets();
       return ResponseEntity.ok()
           .body(
               new ApiResponse<List<TicketResponseDto>>(

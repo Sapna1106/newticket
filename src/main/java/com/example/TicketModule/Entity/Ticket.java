@@ -48,6 +48,8 @@ public class Ticket {
 
     private String customFields;
 
+//    private List<CustomField> customFieldList;
+
     @ManyToMany
     @JoinTable(
             name = "ticket_references",

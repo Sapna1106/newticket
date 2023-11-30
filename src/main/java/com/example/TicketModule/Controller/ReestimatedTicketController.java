@@ -73,6 +73,8 @@ public class ReestimatedTicketController {
         try {
             log.info("Reestimated Ticket Controller : Fetching Reestimated Tickets by User ID");
             List<ReestimatedTicketResponseDTO> reestimatedTicketDTO = reestimatedTicketService.getReestimatedAllTicketByUserId(id);
+            log.info("reestimatedTicketResponseDTO"+reestimatedTicketDTO);
+
             return ResponseEntity.ok().body(new ApiResponse("List Of All Pending Restimation Ticket",reestimatedTicketDTO,"OK"));
         } catch (Exception e) {
             log.error("Reestimated Ticket Controller : "+e.getMessage());
