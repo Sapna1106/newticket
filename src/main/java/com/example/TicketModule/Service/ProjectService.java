@@ -42,7 +42,7 @@ public class ProjectService {
 
     public ProjectResponseDto updateProjectWithCustomField(Long projectId, CustomField customField){
          try{
-             Optional<CustomField> customField1 = customFieldRepo.findByFieldName(customField.getFieldName());
+             Optional<CustomField> customField1 = customFieldRepo.findByFieldNameAndProjectId(customField.getFieldName(), projectId);
 //             System.out.println(customField1.get());
              if(!customField1.isPresent()){
                  customField.setProjectId(projectId);

@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface ReestimatedRepository extends JpaRepository<ReestimatedTicket, Long> {
     List<ReestimatedTicket> findByAssignedTo(Long userId);
-    ReestimatedTicket findByTicket(Ticket ticket);
+    ReestimatedTicket findByStatusAndTicket(String status,Ticket ticket);
+
     List<ReestimatedTicket> findByStatusAndAssignedTo(String status,Long userId);
 }

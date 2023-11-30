@@ -58,8 +58,8 @@ public class ProjectController {
       return ResponseEntity.status(HttpStatus.CREATED)
           .body(new ApiResponse<>("CustomField Add to the Project", projectResponseDto, "created"));
     } catch (ProjectNotFoundException | CustomFieldNameAlreadyPresent e) {
-      return ResponseEntity.status(HttpStatus.NOT_FOUND)
-          .body(new ApiResponse<>(e.getMessage(), null, "NOT_FOUND"));
+      return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+          .body(new ApiResponse<>(e.getMessage(), null, "BAD_REQUEST"));
     } catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
           .body(

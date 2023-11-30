@@ -32,12 +32,12 @@ public class ReestimatedTicketService {
     @Autowired private UserRepository userRepository;
 
     public ReestimatedTicketResponseDTO createReestimatedTicket(Long id, ReestimatedTicketRequestDTO reestimatedTicket) {
-        log.info("Reestimated Ticket Service : create reestimation execution started");
+        log.info("Reestimated Ticket Service : create reestimation execution started"+reestimatedTicket);
         ReestimatedTicket newReestimatedTicket= reestimatedTicket.convertToEntity(reestimatedTicket);
         Optional<Ticket> currentTicket = ticketRepository.findById(id);
         System.out.println("hii"+currentTicket.get());
-        ReestimatedTicket ticketId= reestimatedTicketRepository.findByTicket(currentTicket.get());
-        System.out.println(ticketId);
+        ReestimatedTicket ticketId= reestimatedTicketRepository.findByStatusAndTicket("Pending" ,currentTicket.get());
+        System.out.println("hlw"+ticketId);
         if(ticketId == null){
             try {
                 log.info("Reestimated Ticket Service : inside try");
@@ -52,6 +52,7 @@ public class ReestimatedTicketService {
                     newReestimatedTicket= reestimatedTicketRepository.save(newReestimatedTicket);
                     ReestimatedTicketResponseDTO reestimatedTicketResponseDTO= new ReestimatedTicketResponseDTO(newReestimatedTicket);
                     convertToUser(newReestimatedTicket, reestimatedTicketResponseDTO);
+                    log.info("reestimatedTicketResponseDTO"+reestimatedTicketResponseDTO);
                     return reestimatedTicketResponseDTO;
                 } else {
                     log.error("Reestimated Ticket Service : Ticket not found");

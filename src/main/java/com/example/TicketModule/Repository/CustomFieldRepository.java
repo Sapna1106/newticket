@@ -10,5 +10,5 @@ public interface CustomFieldRepository extends JpaRepository<CustomField, Long> 
 
     List<CustomField> findByProjectId(Long projectId);
 
-    Optional<CustomField> findByFieldName(String name);
+    Optional<CustomField> findByFieldNameAndProjectId(String name, Long projectId);
 }

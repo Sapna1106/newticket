@@ -1,13 +1,10 @@
 package com.example.TicketModule.DTO;
-import com.example.TicketModule.Entity.Project;
 import com.example.TicketModule.Entity.Ticket;
-import com.example.TicketModule.Entity.User;
 import com.example.TicketModule.Enum.Priority;
 import lombok.Data;
 import java.time.Instant;
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
+
 @Data
 public class RequestBodyTicket {
   private Long id;
@@ -22,13 +19,13 @@ public class RequestBodyTicket {
   private String status;
   private Priority priority;
   private List<Long> assignee;
-  private Long accountableAssignee;
+  private Long accountableAssigneeName;
   private String customFields;
   public Ticket convertToEntity(RequestBodyTicket newTicket) {
     Ticket ticket = new Ticket();
     ticket.setProjectId(newTicket.getProjectId());
     ticket.setCreatedBy(newTicket.getCreatedBy());
-    ticket.setAccountableAssignee(newTicket.getAccountableAssignee());
+    ticket.setAccountableAssignee(newTicket.getAccountableAssigneeName());
     ticket.setTicketId(newTicket.getTicketId());
     ticket.setId(newTicket.getId());
     ticket.setName(newTicket.getName());
@@ -38,7 +35,7 @@ public class RequestBodyTicket {
     ticket.setEndTime(newTicket.getEndTime());
     ticket.setStatus(newTicket.getStatus());
     ticket.setPriority(newTicket.getPriority());
-    System.out.println(newTicket.getCustomFields());
+//    System.out.println(newTicket.getCustomFields());
     ticket.setCustomFields(newTicket.getCustomFields());
     return ticket;
   }

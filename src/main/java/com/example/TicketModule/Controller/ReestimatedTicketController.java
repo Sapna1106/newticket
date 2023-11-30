@@ -34,10 +34,11 @@ public class ReestimatedTicketController {
 
     @PostMapping("/{id}/re-estimation")
     public ResponseEntity<ApiResponse> createReestimatedTicket(@PathVariable Long id, @RequestBody ReestimatedTicketRequestDTO reestimatedTicket) {
-        log.info("Reestimated Ticket Controller : Inside create reestimation ticket");
+        log.info("Reestimated Ticket Controller : Inside create reestimation ticket"+reestimatedTicket);
         try {
             log.info("Reestimated Ticket Controller : Creating Reestimated Ticket");
             ReestimatedTicketResponseDTO createdReestimatedTicket = reestimatedTicketService.createReestimatedTicket(id, reestimatedTicket);
+            log.info("createdReestimatedTicket"+createdReestimatedTicket);
             return ResponseEntity.ok()
                     .body(
                             new ApiResponse<ReestimatedTicketResponseDTO>(
