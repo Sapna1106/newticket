@@ -11,6 +11,7 @@ import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class TicketResponseDto {
@@ -32,7 +33,7 @@ public class TicketResponseDto {
 
   private UserDto accountableAssigneeName;
 
-  private String customFields;
+  private Map<String, Object> customFields;
 
   private List<CustomField> customFieldList;
 

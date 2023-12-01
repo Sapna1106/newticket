@@ -47,7 +47,10 @@ public class Ticket {
 
     private Long accountableAssignee;
 
-    private String customFields;
+
+    @Column(columnDefinition = "json")
+    @Convert(converter = JsonMapConverter.class)
+    private Map<String, Object> customFields;
 
     @ManyToMany
     @JoinTable(

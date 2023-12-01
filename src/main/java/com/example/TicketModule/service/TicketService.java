@@ -78,6 +78,7 @@ public class TicketService {
   public TicketResponseDto createTicket(RequestBodyTicket newTicket) {
     log.info("TicketService : createTicket Execution started");
     try {
+      System.out.println(newTicket);
       Ticket ticket = newTicket.convertToEntity(newTicket);
       Project project = projectRepo.findById(newTicket.getProjectId()).orElse(null);
       if (project != null) {

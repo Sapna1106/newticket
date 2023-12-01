@@ -7,6 +7,7 @@ import lombok.Data;
 import java.time.Instant;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Data
 public class RequestBodyTicket {
@@ -25,7 +26,7 @@ public class RequestBodyTicket {
   private Long stageId;
   private List<Long> assignee;
   private Long accountableAssignee;
-  private String customFields;
+  private Map<String, Object> customFields;
 
   public Ticket convertToEntity(RequestBodyTicket newTicket) {
     Ticket ticket = new Ticket();

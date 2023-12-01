@@ -65,11 +65,11 @@ public class TriggerStart {
 
   private void customeFieldMethod(
       CustomField customField, Ticket existing, Ticket updated, Method method, Long projectId) throws InvocationTargetException, IllegalAccessException, JsonProcessingException {
-    String existingCustomFields = existing.getCustomFields();
-    String updatedCustomFields = updated.getCustomFields();
-
-    ObjectMapper objectMapper = new ObjectMapper();
-    JsonNode jsonNode = objectMapper.readTree(existingCustomFields);
+//    String existingCustomFields = existing.getCustomFields();
+//    String updatedCustomFields = updated.getCustomFields();
+//
+//    ObjectMapper objectMapper = new ObjectMapper();
+//    JsonNode jsonNode = objectMapper.readTree(existingCustomFields);
 
     // Convert JsonNode to Map
 //    Map<String, Object> resultMap = jsonToMap(jsonNode);
