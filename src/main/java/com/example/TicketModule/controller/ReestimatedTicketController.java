@@ -1,8 +1,8 @@
 package com.example.TicketModule.controller;
 
-import com.example.TicketModule.Dto.ApiResponse;
-import com.example.TicketModule.Dto.reestimated.ReestimatedTicketRequestDTO;
-import com.example.TicketModule.Dto.reestimated.ReestimatedTicketResponseDTO;
+import com.example.TicketModule.dto.ApiResponse;
+import com.example.TicketModule.dto.reestimated.ReestimatedTicketRequestDTO;
+import com.example.TicketModule.dto.reestimated.ReestimatedTicketResponseDTO;
 import com.example.TicketModule.exception.ReestimatedTicketAlreadyPresent;
 import com.example.TicketModule.exception.ReestimationCreationException;
 import com.example.TicketModule.exception.ReestimationNotFoundException;

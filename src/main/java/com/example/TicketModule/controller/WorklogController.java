@@ -2,8 +2,8 @@ package com.example.TicketModule.controller;
 
 import java.util.List;
 
-import com.example.TicketModule.Dto.ApiResponse;
-import com.example.TicketModule.Dto.WorklogsDTO;
+import com.example.TicketModule.dto.ApiResponse;
+import com.example.TicketModule.dto.WorklogsDTO;
 import com.example.TicketModule.entity.Worklogs;
 import com.example.TicketModule.exception.UserNotFoundException;
 import com.example.TicketModule.exception.WorklogNotFoundException;

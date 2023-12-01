@@ -1,7 +1,7 @@
 package com.example.TicketModule.controller;
 
-import com.example.TicketModule.Dto.ApiResponse;
-import com.example.TicketModule.Dto.tickets.TicketResponseDto;
+import com.example.TicketModule.dto.ApiResponse;
+import com.example.TicketModule.dto.tickets.TicketResponseDto;
 import com.example.TicketModule.exception.TicketCreationException;
 import com.example.TicketModule.exception.TicketNotFoundException;
 import com.example.TicketModule.exception.UserNotFoundException;
@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.example.TicketModule.Dto.tickets.RequestBodyTicket;
+import com.example.TicketModule.dto.tickets.RequestBodyTicket;
 
 import java.util.List;
 
@@ -89,9 +89,11 @@ public class TicketController {
           return ResponseEntity.status(HttpStatus.CREATED)
                   .body(new ApiResponse<TicketResponseDto>("Ticket updated successfully", updatedTicket, "CREATED"));
     } catch (TicketNotFoundException e) {
+      log.error(String.valueOf(e));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ApiResponse<>(e.getMessage(), null, "BAD_REQUEST"));
     } catch (Exception e) {
+      log.error(String.valueOf(e));
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ApiResponse<>("An error occurred while updating ticket", null, "INTERNAL_SERVER_ERROR"));
     }

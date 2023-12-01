@@ -8,4 +8,8 @@ import java.util.List;
 public interface CustomFieldRepository extends JpaRepository<CustomField, Long> {
 
     List<CustomField> findByProjectId(Long projectId);
+
+    CustomField findByFieldName(String name);
+
+    List<CustomField> findByDataType(String datatype);
 }

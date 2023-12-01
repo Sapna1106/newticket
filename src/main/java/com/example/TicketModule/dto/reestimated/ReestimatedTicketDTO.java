@@ -1,4 +1,4 @@
-package com.example.TicketModule.Dto.reestimated;
+package com.example.TicketModule.dto.reestimated;
 
 import com.example.TicketModule.entity.ReestimatedTicket;
 import lombok.AllArgsConstructor;

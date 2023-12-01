@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -15,7 +16,7 @@ public class ReestimatedTicket {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Instant newDate;
+    private Date newDate;
     private String reason;
     private String denyReason;
     private String status = "Pending";

@@ -1,10 +1,10 @@
 package com.example.TicketModule.service;
 
 import com.example.TicketModule.controller.TicketController;
-import com.example.TicketModule.Dto.tickets.ProjectDto;
-import com.example.TicketModule.Dto.tickets.RequestBodyTicket;
-import com.example.TicketModule.Dto.tickets.TicketResponseDto;
-import com.example.TicketModule.Dto.tickets.UserDto;
+import com.example.TicketModule.dto.tickets.ProjectDto;
+import com.example.TicketModule.dto.tickets.RequestBodyTicket;
+import com.example.TicketModule.dto.tickets.TicketResponseDto;
+import com.example.TicketModule.dto.tickets.UserDto;
 import com.example.TicketModule.entity.CustomField;
 import com.example.TicketModule.entity.Project;
 import com.example.TicketModule.entity.Ticket;
@@ -22,6 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +36,8 @@ public class TicketService {
   @Autowired private ProjectRepository projectRepo;
   @Autowired private UserRepository userRepo;
   @Autowired private ModelMapper modelMapper;
+
+  @Autowired TriggerStart triggerStart;
 
   @Autowired private CustomFieldRepository customizedRepository;
 
@@ -166,16 +169,20 @@ public class TicketService {
   }
 
   public TicketResponseDto updateTicket(RequestBodyTicket requestBodyTicket, Long ticketId)
-      throws TicketNotFoundException {
+      throws TicketNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
     try {
       log.info("TicketService : updateTicket Execution Started");
-      Ticket ticket = requestBodyTicket.convertToEntity(requestBodyTicket);
+      System.out.println(requestBodyTicket+"request ");
       Optional<Project> projectOptional = projectRepo.findById(requestBodyTicket.getProjectId());
       if (projectOptional.isPresent()) {
         log.info("TicketService : Project Found With the Id ");
         Optional<Ticket> existingTicket = ticketRepository.findById(ticketId);
 
         if (existingTicket.isPresent()) {
+          Ticket existing = existingTicket.get();
+          Ticket updatedTicket = requestBodyTicket.convertToEntity(requestBodyTicket);
+          triggerStart.triggerOnUpdate(existing,updatedTicket,updatedTicket.getProjectId());
+          updatedTicket.setId(existing.getId());
           log.info("TicketService : Ticket Found With the Id ");
           List<User> assignees = new ArrayList<>();
           for (Long userId : requestBodyTicket.getAssignee()) {
@@ -183,16 +190,16 @@ public class TicketService {
             if(user != null)
             assignees.add(user);
           }
-          existingTicket.get().setAssignee(assignees);
-          clone(existingTicket.get(), ticket);
-          ticket = ticketRepository.save(existingTicket.get());
-          TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket);
+          updatedTicket.setAssignee(assignees);
+          updatedTicket = ticketRepository.save(updatedTicket);
+
+          TicketResponseDto ticketResponseDto = new TicketResponseDto(updatedTicket);
           convertToUser(existingTicket.get(), ticketResponseDto);
           log.info("TicketService : updateTicket Execution Ended");
           return ticketResponseDto;
         } else {
-          log.error("TicketService : Ticket not found with id {} ",ticket.getId());
-          throw new TicketNotFoundException("Ticket not found with id:  " + ticket.getId());
+          log.error("TicketService : Ticket not found with id {} ",ticketId);
+          throw new TicketNotFoundException("Ticket not found with id:  " + ticketId);
         }
       } else {
         log.error("TicketService : Project With the ID Not Found");
@@ -213,6 +220,7 @@ public class TicketService {
     existing.setDescription(updated.getDescription());
     existing.setAccountableAssignee(updated.getAccountableAssignee());
     existing.setCustomFields(updated.getCustomFields());
+    existing.setStageId(updated.getStageId());
   }
 
   public void deleteTicket(Long id) {

@@ -1,8 +1,8 @@
 package com.example.TicketModule.service;
 
-import com.example.TicketModule.Dto.reestimated.ReestimatedTicketRequestDTO;
-import com.example.TicketModule.Dto.reestimated.ReestimatedTicketResponseDTO;
-import com.example.TicketModule.Dto.tickets.UserDto;
+import com.example.TicketModule.dto.reestimated.ReestimatedTicketRequestDTO;
+import com.example.TicketModule.dto.reestimated.ReestimatedTicketResponseDTO;
+import com.example.TicketModule.dto.tickets.UserDto;
 import com.example.TicketModule.entity.ReestimatedTicket;
 import com.example.TicketModule.entity.Ticket;
 import com.example.TicketModule.entity.User;

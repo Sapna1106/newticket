@@ -1,4 +1,4 @@
-package com.example.TicketModule.Dto;
+package com.example.TicketModule.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package com.example.TicketModule.Dto;
+package com.example.TicketModule.dto;
 
 import com.example.TicketModule.entity.CustomField;
 import lombok.AllArgsConstructor;

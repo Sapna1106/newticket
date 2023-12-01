@@ -1,6 +1,6 @@
-package com.example.TicketModule.Dto;
+package com.example.TicketModule.dto;
 
-import com.example.TicketModule.Dto.tickets.TicketResponseDto;
+import com.example.TicketModule.dto.tickets.TicketResponseDto;
 import com.example.TicketModule.entity.PlanedTask;
 import lombok.Data;
 

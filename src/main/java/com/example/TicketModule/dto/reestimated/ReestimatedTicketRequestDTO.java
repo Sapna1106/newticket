@@ -1,9 +1,10 @@
-package com.example.TicketModule.Dto.reestimated;
+package com.example.TicketModule.dto.reestimated;
 
 import com.example.TicketModule.entity.ReestimatedTicket;
 import lombok.Data;
 
 import java.time.Instant;
+import java.util.Date;
 
 @Data
 public class ReestimatedTicketRequestDTO {
@@ -12,7 +13,7 @@ public class ReestimatedTicketRequestDTO {
     private String reason;
     private String denyReason;
     private String  status = "Pending";
-    private Instant newDate;
+    private Date newDate;
     private Long reestimatedBy;
     private Long assignedTo;
 

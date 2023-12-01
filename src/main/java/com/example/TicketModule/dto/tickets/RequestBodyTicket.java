@@ -1,10 +1,11 @@
-package com.example.TicketModule.Dto.tickets;
+package com.example.TicketModule.dto.tickets;
 
 import com.example.TicketModule.entity.Ticket;
 import com.example.TicketModule.enums.Priority;
 import lombok.Data;
 
 import java.time.Instant;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -13,14 +14,15 @@ public class RequestBodyTicket {
   private String ticketId;
   private String name;
   private String description;
-  private Instant startDate;
-  private Instant endDate;
-  private Instant endTime;
+  private Date startDate;
+  private Date endDate;
+  private Date endTime;
   private Long createdBy;
   private Long projectId;
   private String status;
-  private Priority priority;
+  private String priority;
 
+  private Long stageId;
   private List<Long> assignee;
   private Long accountableAssignee;
   private String customFields;
@@ -40,6 +42,7 @@ public class RequestBodyTicket {
     ticket.setStatus(newTicket.getStatus());
     ticket.setPriority(newTicket.getPriority());
     ticket.setCustomFields(newTicket.getCustomFields());
+    ticket.setStageId(newTicket.getStageId());
     return ticket;
   }
 }

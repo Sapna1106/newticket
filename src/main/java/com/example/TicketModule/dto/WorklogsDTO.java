@@ -1,8 +1,8 @@
-package com.example.TicketModule.Dto;
+package com.example.TicketModule.dto;
 
 import java.time.LocalDateTime;
 
-import com.example.TicketModule.Dto.tickets.UserDto;
+import com.example.TicketModule.dto.tickets.UserDto;
 import com.example.TicketModule.entity.Worklogs;
 import lombok.Data;
 import lombok.NoArgsConstructor;

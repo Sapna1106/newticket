@@ -1,7 +1,7 @@
 package com.example.TicketModule.service;
-import com.example.TicketModule.Dto.tickets.UserDto;
-import com.example.TicketModule.Dto.WorklogTicketDto;
-import com.example.TicketModule.Dto.WorklogsDTO;
+import com.example.TicketModule.dto.tickets.UserDto;
+import com.example.TicketModule.dto.WorklogTicketDto;
+import com.example.TicketModule.dto.WorklogsDTO;
 import com.example.TicketModule.entity.Ticket;
 import com.example.TicketModule.entity.User;
 import com.example.TicketModule.entity.Worklogs;

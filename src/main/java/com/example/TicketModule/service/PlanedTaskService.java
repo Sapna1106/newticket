@@ -1,7 +1,7 @@
 package com.example.TicketModule.service;
 
-import com.example.TicketModule.Dto.PlanedTaskDto;
-import com.example.TicketModule.Dto.tickets.TicketResponseDto;
+import com.example.TicketModule.dto.PlanedTaskDto;
+import com.example.TicketModule.dto.tickets.TicketResponseDto;
 import com.example.TicketModule.entity.PlanedTask;
 import com.example.TicketModule.entity.Ticket;
 import com.example.TicketModule.exception.TicketNotFoundException;

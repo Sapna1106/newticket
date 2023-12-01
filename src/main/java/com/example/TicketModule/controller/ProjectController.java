@@ -1,7 +1,7 @@
 package com.example.TicketModule.controller;
 
-import com.example.TicketModule.Dto.ApiResponse;
-import com.example.TicketModule.Dto.ProjectResponseDto;
+import com.example.TicketModule.dto.ApiResponse;
+import com.example.TicketModule.dto.ProjectResponseDto;
 import com.example.TicketModule.entity.CustomField;
 import com.example.TicketModule.exception.CustomeFieldNotFoundException;
 import com.example.TicketModule.exception.ProjectNotFoundException;

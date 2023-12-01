@@ -1,5 +1,5 @@
 package com.example.TicketModule.service;
-import com.example.TicketModule.Dto.ProjectResponseDto;
+import com.example.TicketModule.dto.ProjectResponseDto;
 import com.example.TicketModule.entity.CustomField;
 import com.example.TicketModule.entity.Project;
 import com.example.TicketModule.exception.CustomeFieldNotFoundException;
@@ -38,6 +38,10 @@ public class ProjectService {
          }catch (Exception e){
              throw e;
          }
+    }
+
+    public List<CustomField> getAllCustomField(Long projectId){
+        return customFieldRepo.findByProjectId(projectId);
     }
 
     public boolean deleteCustomField(Long projectId, Long customFieldId){

@@ -25,14 +25,16 @@ public class Ticket {
 
     private Long createdBy;
 
-    private Instant startDate;
-    private Instant endDate;
-    private Instant endTime;
+    private Date startDate;
+    private Date endDate;
+    private Date endTime;
 
     private Long projectId;
 
     private String status= "To Do";
-    private Priority priority= Priority.MEDIUM;
+    private String priority= "MEDIUM";
+
+    private Long stageId;
 
 
     @ManyToMany

@@ -14,7 +14,7 @@ public class PlanedTask {
 
     private Long userId;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     private Ticket ticket;
 
     private LocalDateTime dropDate;

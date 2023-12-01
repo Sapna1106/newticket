@@ -20,12 +20,6 @@ public class Project {
 
     private String name;
 
-    @OneToMany(mappedBy = "projectId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Ticket> tickets;
-
-    @OneToMany(mappedBy = "projectId", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<CustomField> customizedFields;
-
     @ManyToOne
     @JoinColumn(name= "department_id")
     private Department departmentId;
