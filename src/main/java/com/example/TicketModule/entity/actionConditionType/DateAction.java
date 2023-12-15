@@ -15,9 +15,7 @@ public class DateAction extends ActionCondition{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String operation;
-
-    private Date date;
+    private Date newDate;
     @Override
     public ConditionOnAction getConditionType() {
         return ConditionOnAction.DATE;

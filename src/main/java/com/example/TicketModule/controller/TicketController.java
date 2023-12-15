@@ -2,6 +2,7 @@ package com.example.TicketModule.controller;
 
 import com.example.TicketModule.dto.ApiResponse;
 import com.example.TicketModule.dto.tickets.TicketResponseDto;
+import com.example.TicketModule.exception.ProjectNotFoundException;
 import com.example.TicketModule.exception.TicketCreationException;
 import com.example.TicketModule.exception.TicketNotFoundException;
 import com.example.TicketModule.exception.UserNotFoundException;
@@ -36,7 +37,7 @@ public class TicketController {
           .body(
               new ApiResponse<TicketResponseDto>(
                   "Ticket created successfully", createdTicket, "OK"));
-    } catch (TicketCreationException e) {
+    } catch (TicketCreationException | UserNotFoundException | ProjectNotFoundException e ) {
       return ResponseEntity.status(HttpStatus.BAD_REQUEST)
           .body(new ApiResponse<>(e.getMessage(), null, "BAD_REQUEST"));
     } catch (Exception e) {
@@ -88,7 +89,7 @@ public class TicketController {
       TicketResponseDto updatedTicket = ticketService.updateTicket(requestBodyTicket, id);
           return ResponseEntity.status(HttpStatus.CREATED)
                   .body(new ApiResponse<TicketResponseDto>("Ticket updated successfully", updatedTicket, "CREATED"));
-    } catch (TicketNotFoundException e) {
+    } catch (TicketNotFoundException | UserNotFoundException | ProjectNotFoundException e) {
       log.error(String.valueOf(e));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ApiResponse<>(e.getMessage(), null, "BAD_REQUEST"));
@@ -174,7 +175,11 @@ public class TicketController {
     try {
       List<TicketResponseDto> tickets = ticketService.getTicketsByProject(projectId);
       return ResponseEntity.ok().body(new ApiResponse<List<TicketResponseDto>>("",tickets,"OK"));
-    } catch (Exception e) {
+    }catch (TicketNotFoundException e){
+      return ResponseEntity.status(HttpStatus.NOT_FOUND)
+              .body(new ApiResponse<>(e.getMessage(), null, "NOT_FOUND"));
+    }
+    catch (Exception e) {
       return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
               .body(new ApiResponse<>("Error occure while getting tickets by assigne Id", null, "INTERNAL_SERVER_ERROR"));
     }

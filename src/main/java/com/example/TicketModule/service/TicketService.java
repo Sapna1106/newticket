@@ -13,15 +13,13 @@ import com.example.TicketModule.exception.ProjectNotFoundException;
 import com.example.TicketModule.exception.TicketNotFoundException;
 import com.example.TicketModule.exception.UserNotFoundException;
 import com.example.TicketModule.repository.CustomFieldRepository;
-import com.example.TicketModule.repository.ProjectRepository;
 import com.example.TicketModule.repository.TicketRepository;
-import com.example.TicketModule.repository.UserRepository;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.modelmapper.ModelMapper;
-
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,8 +31,8 @@ public class TicketService {
 
   private static final Logger log = LoggerFactory.getLogger(TicketController.class);
   @Autowired private TicketRepository ticketRepository;
-  @Autowired private ProjectRepository projectRepo;
-  @Autowired private UserRepository userRepo;
+  @Autowired private ProjectService projectService;
+  @Autowired private UserService userService;
   @Autowired private ModelMapper modelMapper;
 
   @Autowired TriggerStart triggerStart;
@@ -75,12 +73,13 @@ public class TicketService {
   //    }
   //  }
 
-  public TicketResponseDto createTicket(RequestBodyTicket newTicket) {
+  public TicketResponseDto createTicket(RequestBodyTicket newTicket)
+      throws InvocationTargetException, IllegalAccessException, NoSuchMethodException {
     log.info("TicketService : createTicket Execution started");
     try {
       System.out.println(newTicket);
       Ticket ticket = newTicket.convertToEntity(newTicket);
-      Project project = projectRepo.findById(newTicket.getProjectId()).orElse(null);
+      Project project = projectService.getProjectById(newTicket.getProjectId());
       if (project != null) {
         log.info("TicketService: project is not null");
         List<Ticket> ticketsForProject = ticketRepository.findByProjectId(newTicket.getProjectId());
@@ -93,33 +92,23 @@ public class TicketService {
           int lastTicketNumber = Integer.parseInt(lastCustomId.split("-")[1]);
           int newTicketNumber = lastTicketNumber + 1;
           ticket.setTicketId(projectInitials + "-" + newTicketNumber);
-          List<User> assignees = new ArrayList<>();
-          for (Long userId : newTicket.getAssignee()) {
-            User user = userRepo.findById(userId).get();
-            if(user != null)
-              assignees.add(user);
-          }
-          ticket.setAssignee(assignees);
-          ticket = ticketRepository.save(ticket);
-          TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket);
-          convertToUser(ticket, ticketResponseDto);
-          log.info("TicketService : createTicket Execution End");
-          return ticketResponseDto;
-
         } else {
           ticket.setTicketId(project.getInitials().toUpperCase() + "-1");
           log.info("TicketService: list is  empty");
-          List<User> assignees = new ArrayList<>();
-          for (Long userId : newTicket.getAssignee()) {
-            assignees.add(userRepo.findById(userId).get());
-          }
-          ticket.setAssignee(assignees);
-          ticket = ticketRepository.save(ticket);
-          TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket);
-          convertToUser(ticket, ticketResponseDto);
-          log.info("TicketService : createTicket Execution End");
-          return ticketResponseDto;
         }
+
+        triggerStart.handleTicketUpdate(null, ticket, ticket.getProjectId());
+
+        List<User> assignees = new ArrayList<>();
+        for (Long userId : newTicket.getAssignee()) {
+          assignees.add(userService.getUserById(userId));
+        }
+        ticket.setAssignee(assignees);
+        ticket = ticketRepository.save(ticket);
+        TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket);
+        convertToUser(ticket, ticketResponseDto);
+        log.info("TicketService : createTicket Execution End");
+        return ticketResponseDto;
       } else {
         log.error("TicketService : Project With The Id Not Found");
         throw new ProjectNotFoundException("Project With The Id Not Found");
@@ -164,47 +153,49 @@ public class TicketService {
       log.info("TicketService : getTicketById Execution Ended");
       return ticketResponseDto;
     } else {
-      log.error("TicketService : Ticket not found with id: {} " ,id);
+      log.error("TicketService : Ticket not found with id: {} ", id);
       throw new TicketNotFoundException("Ticket not found with id: " + id);
     }
   }
 
   public TicketResponseDto updateTicket(RequestBodyTicket requestBodyTicket, Long ticketId)
-      throws TicketNotFoundException, InvocationTargetException, IllegalAccessException, NoSuchMethodException {
+      throws TicketNotFoundException,
+          InvocationTargetException,
+          IllegalAccessException,
+          NoSuchMethodException,
+          JsonProcessingException {
     try {
       log.info("TicketService : updateTicket Execution Started");
-      System.out.println(requestBodyTicket+"request ");
-      Optional<Project> projectOptional = projectRepo.findById(requestBodyTicket.getProjectId());
-      if (projectOptional.isPresent()) {
-        log.info("TicketService : Project Found With the Id ");
-        Optional<Ticket> existingTicket = ticketRepository.findById(ticketId);
+      System.out.println(requestBodyTicket + "request ");
+      Project project = projectService.getProjectById(requestBodyTicket.getProjectId());
+      log.info("TicketService : Project Found With the Id ");
+      Optional<Ticket> existingTicket = ticketRepository.findById(ticketId);
 
-        if (existingTicket.isPresent()) {
-          Ticket existing = existingTicket.get();
-          Ticket updatedTicket = requestBodyTicket.convertToEntity(requestBodyTicket);
-          triggerStart.triggerOnUpdate(existing,updatedTicket,updatedTicket.getProjectId());
-          updatedTicket.setId(existing.getId());
-          log.info("TicketService : Ticket Found With the Id ");
-          List<User> assignees = new ArrayList<>();
-          for (Long userId : requestBodyTicket.getAssignee()) {
-            User user = userRepo.findById(userId).get();
-            if(user != null)
-            assignees.add(user);
-          }
-          updatedTicket.setAssignee(assignees);
-          updatedTicket = ticketRepository.save(updatedTicket);
-
-          TicketResponseDto ticketResponseDto = new TicketResponseDto(updatedTicket);
-          convertToUser(existingTicket.get(), ticketResponseDto);
-          log.info("TicketService : updateTicket Execution Ended");
-          return ticketResponseDto;
-        } else {
-          log.error("TicketService : Ticket not found with id {} ",ticketId);
-          throw new TicketNotFoundException("Ticket not found with id:  " + ticketId);
+      if (existingTicket.isPresent()) {
+        Ticket existing = existingTicket.get();
+        Ticket updatedTicket = requestBodyTicket.convertToEntity(requestBodyTicket);
+        for(Long userId:requestBodyTicket.getAssignee()){
+          User user = userService.getUserById(userId);
+          updatedTicket.getAssignee().add(user);
         }
+        triggerStart.handleTicketUpdate(existing, updatedTicket, updatedTicket.getProjectId());
+        updatedTicket.setId(existing.getId());
+        log.info("TicketService : Ticket Found With the Id ");
+        List<User> assignees = new ArrayList<>();
+        for (Long userId : requestBodyTicket.getAssignee()) {
+          User user = userService.getUserById(userId);
+          if (user != null) assignees.add(user);
+        }
+        updatedTicket.setAssignee(assignees);
+        updatedTicket = ticketRepository.save(updatedTicket);
+
+        TicketResponseDto ticketResponseDto = new TicketResponseDto(updatedTicket);
+        convertToUser(existingTicket.get(), ticketResponseDto);
+        log.info("TicketService : updateTicket Execution Ended");
+        return ticketResponseDto;
       } else {
-        log.error("TicketService : Project With the ID Not Found");
-        throw new ProjectNotFoundException("Project With the ID Not Found");
+        log.error("TicketService : Ticket not found with id {} ", ticketId);
+        throw new TicketNotFoundException("Ticket not found with id:  " + ticketId);
       }
     } catch (Exception e) {
       throw e;
@@ -273,47 +264,57 @@ public class TicketService {
   }
 
   public List<TicketResponseDto> getTicketsByProject(Long projectId) {
-    try{
+    try {
       log.info("TicketService : getTicketsByProject Execution Started");
       List<Ticket> ticketList = ticketRepository.findByProjectId(projectId);
       List<TicketResponseDto> responseTickets =
-              ticketList.stream()
-                      .map(
-                              ticket -> {
-                                try {
-                                  TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket);
-                                  convertToUser(ticket, ticketResponseDto);
-                                  return ticketResponseDto;
-                                } catch (Exception e) {
-                                  e.printStackTrace();
-                                  return null;
-                                }
-                              })
-                      .collect(Collectors.toList());
+          ticketList.stream()
+              .map(
+                  ticket -> {
+                    try {
+                      TicketResponseDto ticketResponseDto = new TicketResponseDto(ticket);
+                      convertToUser(ticket, ticketResponseDto);
+                      return ticketResponseDto;
+                    } catch (Exception e) {
+                      e.printStackTrace();
+                      return null;
+                    }
+                  })
+              .collect(Collectors.toList());
       log.info("TicketService : getTicketsByProject Execution Ended");
       return responseTickets;
-    }
-    catch (Exception e){
+    } catch (Exception e) {
       throw e;
     }
-
   }
 
   public void convertToUser(Ticket ticket, TicketResponseDto ticketResponseDto) {
     try {
       User createdBy = getUserById(ticket.getCreatedBy());
+      if (createdBy == null)
+        throw new UserNotFoundException("User Not Found with the ID : " + ticket.getCreatedBy());
       User accountableAssignee = getUserById(ticket.getAccountableAssignee());
+      if (accountableAssignee == null)
+        throw new UserNotFoundException("User Not Found with the ID : " + ticket.getCreatedBy());
 
-      ticketResponseDto.setCreatedBy(new UserDto(createdBy.getId(), createdBy.getUserName(), createdBy.getEmail()));
-      ticketResponseDto.setAccountableAssigneeName(new UserDto(accountableAssignee.getId(), accountableAssignee.getUserName(), accountableAssignee.getEmail()));
+      ticketResponseDto.setCreatedBy(
+          new UserDto(createdBy.getId(), createdBy.getUserName(), createdBy.getEmail()));
+      ticketResponseDto.setAccountableAssigneeName(
+          new UserDto(
+              accountableAssignee.getId(),
+              accountableAssignee.getUserName(),
+              accountableAssignee.getEmail()));
 
-      List<UserDto> assigneeUserDtos = ticket.getAssignee().stream()
+      List<UserDto> assigneeUserDtos =
+          ticket.getAssignee().stream()
               .map(user -> new UserDto(user.getId(), user.getUserName(), user.getEmail()))
               .collect(Collectors.toList());
 
-      Project project = getProjectById(ticket.getProjectId());
+      Project project = projectService.getProjectById(ticket.getProjectId());
+      if (project == null)
+        throw new ProjectNotFoundException(
+            "Project With the ID Do not Exist +" + ticket.getProjectId());
       List<CustomField> customFieldList = getCustomFieldsByProjectId(ticket.getProjectId());
-
       ticketResponseDto.setProject(new ProjectDto(project.getId(), project.getName()));
       ticketResponseDto.setCustomFieldList(customFieldList);
       ticketResponseDto.setAssigneeName(assigneeUserDtos);
@@ -323,25 +324,22 @@ public class TicketService {
     }
   }
 
-  public Ticket getTicketByIdTicket(Long ticketId){
+  public Ticket getTicketByIdTicket(Long ticketId) {
     return ticketRepository
         .findById(ticketId)
-        .orElseThrow(() -> new TicketNotFoundException("Ticket not found with id: " +ticketId));
+        .orElseThrow(() -> new TicketNotFoundException("Ticket not found with id: " + ticketId));
   }
-
 
   private User getUserById(Long userId) {
-    return userRepo.findById(userId)
-            .orElseThrow(() -> new UserNotFoundException("User not found with id: " + userId));
-  }
-
-  private Project getProjectById(Long projectId) {
-    return projectRepo.findById(projectId)
-            .orElseThrow(() -> new ProjectNotFoundException("Project not found with id: " + projectId));
+    return userService
+        .getUserById(userId);
   }
 
   private List<CustomField> getCustomFieldsByProjectId(Long projectId) {
     return customizedRepository.findByProjectId(projectId);
   }
 
+  public Ticket saveTicket(Ticket ticket){
+    return ticketRepository.save(ticket);
+  }
 }

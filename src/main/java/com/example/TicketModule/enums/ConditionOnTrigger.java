@@ -7,7 +7,7 @@ public enum ConditionOnTrigger {
 
     DATE,
 
-    STAGE,
+    ID,
 
     PROJECT,
 

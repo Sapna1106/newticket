@@ -1,6 +1,6 @@
-package com.example.TicketModule.entity.actionConditionType;
+package com.example.TicketModule.entity.triggerConditionTypes;
 
-import com.example.TicketModule.enums.ConditionOnAction;
+import com.example.TicketModule.enums.ConditionOnTrigger;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -9,17 +9,19 @@ import lombok.Data;
 
 @Data
 @Entity
-public class StageAction extends ActionCondition {
+public class IdTrigger extends TriggerConditions{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String operation;
 
-    private Long newId;
+    private Long previousId;
+
+    private Long currentId;
 
     @Override
-    public ConditionOnAction getConditionType() {
-        return ConditionOnAction.STAGE;
+    public ConditionOnTrigger getConditionType() {
+        return ConditionOnTrigger.ID;
     }
 }

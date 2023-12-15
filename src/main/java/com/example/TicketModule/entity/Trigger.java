@@ -4,6 +4,7 @@ import com.example.TicketModule.entity.triggerConditionTypes.TriggerConditions;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.antlr.v4.runtime.misc.NotNull;
 
 @Entity
 @Data

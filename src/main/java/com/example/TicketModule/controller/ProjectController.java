@@ -3,6 +3,7 @@ package com.example.TicketModule.controller;
 import com.example.TicketModule.dto.ApiResponse;
 import com.example.TicketModule.dto.ProjectResponseDto;
 import com.example.TicketModule.entity.CustomField;
+import com.example.TicketModule.entity.Project;
 import com.example.TicketModule.exception.CustomeFieldNotFoundException;
 import com.example.TicketModule.exception.ProjectNotFoundException;
 import com.example.TicketModule.service.ProjectService;
@@ -46,7 +47,7 @@ public class ProjectController {
 
     try {
       ProjectResponseDto projectResponseDto =
-          projectService.updateProjectWithCustomField(id, customField);
+          projectService.addCustomeField(id, customField);
       return ResponseEntity.status(HttpStatus.CREATED)
           .body(new ApiResponse<>("CustomField Add to the Project", projectResponseDto, "created"));
     } catch (ProjectNotFoundException e) {
@@ -61,7 +62,27 @@ public class ProjectController {
                   "INTERNAL_SERVER_ERROR"));
     }
   }
+  @PostMapping("/{id}/noncustome")
+  public ResponseEntity<ApiResponse<?>> addNonCustomeField(@PathVariable Long id){
+    try{
+      projectService.addNonCustomeField(id);
+      return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>("Non custome Field of the ticket added succesfully",null,"CREATED"));
+    }catch (Exception e){
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse<>("fail",null,"INTERNAL_SERVER_ERROR"));
 
+    }
+  }
+
+  @PostMapping
+  public ResponseEntity<ApiResponse<?>> addProject(@RequestBody Project project){
+    try{
+      Project newproject = projectService.addNewProject(project);
+      return ResponseEntity.status(HttpStatus.CREATED).body(new ApiResponse<>("Project add SuccesFully",null,"CREATED"));
+    }catch (Exception e){
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ApiResponse<>("fail",null,"INTERNAL_SERVER_ERROR"));
+
+    }
+  }
   @DeleteMapping("/{projectId}/customfields/{fieldId}")
   public ResponseEntity<?> deleteCustomField(
       @PathVariable Long projectId, @PathVariable Long fieldId) {

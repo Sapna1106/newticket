@@ -14,9 +14,7 @@ public class NumberAction extends ActionCondition{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String operation;
-
-    private int number;
+    private int newnumber;
 
     @Override
     public ConditionOnAction getConditionType() {

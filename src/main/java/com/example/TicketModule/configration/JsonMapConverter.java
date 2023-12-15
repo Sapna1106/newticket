@@ -1,4 +1,4 @@
-package com.example.TicketModule.entity;
+package com.example.TicketModule.configration;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import jakarta.persistence.AttributeConverter;

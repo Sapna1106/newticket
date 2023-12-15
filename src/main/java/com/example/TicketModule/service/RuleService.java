@@ -7,8 +7,6 @@ import com.example.TicketModule.entity.triggerConditionTypes.*;
 import com.example.TicketModule.enums.ConditionOnAction;
 import com.example.TicketModule.enums.ConditionOnTrigger;
 import com.example.TicketModule.exception.RuleNotFoundException;
-import com.example.TicketModule.repository.CustomFieldRepository;
-import com.example.TicketModule.repository.ProjectRepository;
 import com.example.TicketModule.repository.RuleRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,10 +18,10 @@ import java.util.Optional;
 
 @Service
 public class RuleService {
-  @Autowired private ProjectRepository projectRepo;
   @Autowired private RuleRepo ruleRepo;
 
-  @Autowired private CustomFieldRepository fieldRepo;
+  @Autowired private ProjectService projectService;
+
 
   private static final Logger logger = LoggerFactory.getLogger(RuleService.class);
 
@@ -71,10 +69,8 @@ public class RuleService {
                   Trigger newTrigger = new Trigger();
                   System.out.println(trigger.getTriggerFieldId());
 
-                  Optional<CustomField> fieldOptionalTrigger =
-                      fieldRepo.findById(trigger.getTriggerFieldId());
-                  CustomField fieldTrigger = fieldOptionalTrigger.get();
-
+                  CustomField fieldTrigger =
+                      projectService.getCustomeFieldById(trigger.getTriggerFieldId());
                   newTrigger.setTriggerField(fieldTrigger);
                   if (trigger.getTriggerCondition() == ConditionOnTrigger.STRING) {
                     StringTrigger stringTrigger = trigger.getStringTrigger();
@@ -85,8 +81,8 @@ public class RuleService {
                   } else if (trigger.getTriggerCondition() == ConditionOnTrigger.DATE) {
                     DateTrigger dateTrigger = trigger.getDateTrigger();
                     newTrigger.setTriggerConditions(dateTrigger);
-                  } else if (trigger.getTriggerCondition() == ConditionOnTrigger.STAGE) {
-                    StageTrigger stageTrigger = trigger.getStageTrigger();
+                  } else if (trigger.getTriggerCondition() == ConditionOnTrigger.ID) {
+                    IdTrigger stageTrigger = trigger.getIdTrigger();
                     newTrigger.setTriggerConditions(stageTrigger);
                   } else if (trigger.getTriggerCondition() == ConditionOnTrigger.USER) {
                     UserTrigger userTrigger = trigger.getUserTrigger();
@@ -116,12 +112,11 @@ public class RuleService {
               Action newAction = new Action();
               System.out.println(action.getActionFieldId());
 
-              Optional<CustomField> fieldOptionalAction = fieldRepo.findById(action.getActionFieldId());
-              CustomField fieldaAction = fieldOptionalAction.get();
+              CustomField fieldaAction = projectService.getCustomeFieldById(action.getActionFieldId());
               newAction.setActionField(fieldaAction);
-              if (action.getActionCondition() == ConditionOnAction.STAGE) {
-                StageAction stageAction = action.getStageAction();
-                newAction.setActionCondition(stageAction);
+              if (action.getActionCondition() == ConditionOnAction.ID) {
+                IdAction idAction = action.getIdAction();
+                newAction.setActionCondition(idAction);
               } else if (action.getActionCondition() == ConditionOnAction.NUMBER) {
                 NumberAction numberAction = action.getNumberAction();
                 newAction.setActionCondition(numberAction);
@@ -160,5 +155,9 @@ public class RuleService {
           e.getMessage());
       throw e;
     }
+  }
+
+  public List<Rule> getRuleByTriggerFieldAndProjectId(CustomField triggerField,Long projectId){
+      return ruleRepo.findByTriggerList_TriggerFieldAndProjectId(triggerField,projectId);
   }
 }

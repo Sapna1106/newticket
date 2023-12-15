@@ -12,7 +12,7 @@ public class ActionRequestDto {
 
     private ConditionOnAction actionCondition;
 
-    private StageAction stageAction;
+    private IdAction idAction;
 
     private NumberAction numberAction;
 

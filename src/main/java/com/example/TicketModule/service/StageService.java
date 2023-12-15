@@ -18,8 +18,6 @@ public class StageService {
 
   @Autowired private StageRepo stageRepo;
 
-  @Autowired private ProjectRepository projectRepo;
-
   /**
    * Get all stages for a project.
    *
@@ -138,6 +136,10 @@ public class StageService {
           e.getMessage());
       throw e;
     }
+  }
+
+  public Stage getStageByStageId(Long stageId){
+      return stageRepo.findById(stageId).orElseThrow(()->new StageNotFoundException("Stage Not Exist with the Id : "+stageId));
   }
 
 //  public void reorderStage(long projectId, int sourceIndex, int destinationIndex) {

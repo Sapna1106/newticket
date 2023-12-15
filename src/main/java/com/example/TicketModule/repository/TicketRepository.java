@@ -16,6 +16,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     List<Ticket> findByAssignee_Id(Long assigneeId);
 
-    @Query(value = "SELECT custom_fields->:key FROM ticketmodule.tickets y WHERE y.id = :id", nativeQuery = true)
-    Optional<String> findNoteByIdAndNotePath(@Param("id") Long id, @Param("key") String key);
+    @Query(value = "SELECT custom_fields->>:key FROM ticketmodule.tickets y WHERE y.id = :id", nativeQuery = true)
+    Optional<String> findByTicketIdAndKey(@Param("id") Long id, @Param("key") String key);
+
+
+
 }

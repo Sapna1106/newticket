@@ -1,6 +1,6 @@
 package com.example.TicketModule.entity;
 
-import com.example.TicketModule.enums.Priority;
+import com.example.TicketModule.configration.JsonMapConverter;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -43,7 +43,7 @@ public class Ticket {
             joinColumns = @JoinColumn(name = "ticket_id"),
             inverseJoinColumns = @JoinColumn(name = "user_id")
     )
-    private List<User> assignee;
+    private List<User> assignee=new ArrayList<>();
 
     private Long accountableAssignee;
 
@@ -71,10 +71,5 @@ public class Ticket {
 
     @UpdateTimestamp
     private Instant updatedAt;
-
-
-    public void generateCustomId(String projectInitials, long count) {
-        this.ticketId = projectInitials + count;
-    }
 
 }

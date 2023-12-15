@@ -29,22 +29,21 @@ public class ReestimatedTicketService {
 
     @Autowired private ReestimatedRepository reestimatedTicketRepository;
 
-    @Autowired private TicketRepository ticketRepository;
+    @Autowired private TicketService ticketService;
 
-    @Autowired private UserRepository userRepository;
+    @Autowired private  UserService userService;
+
 
     public ReestimatedTicketResponseDTO createReestimatedTicket(Long id, ReestimatedTicketRequestDTO reestimatedTicket) {
         log.info("Reestimated Ticket Service : create reestimation execution started");
         ReestimatedTicket newReestimatedTicket= reestimatedTicket.convertToEntity(reestimatedTicket);
-        Optional<Ticket> currentTicket = ticketRepository.findById(id);
-        ReestimatedTicket ticketId= reestimatedTicketRepository.findByTicketId(currentTicket.get());
+        Ticket currentTicket = ticketService.getTicketByIdTicket(id);
+        ReestimatedTicket ticketId= reestimatedTicketRepository.findByTicketId(currentTicket);
         if(ticketId == null){
             try {
-                log.info("Reestimated Ticket Service : inside try");
-                if (currentTicket.isPresent()) {
                     log.info("Reestimated Ticket Service : inside if");
-                    newReestimatedTicket.setTicket(currentTicket.get());
-                    Long assignedTo = currentTicket.get().getCreatedBy();
+                    newReestimatedTicket.setTicket(currentTicket);
+                    Long assignedTo = currentTicket.getCreatedBy();
                     newReestimatedTicket.setAssignedTo(assignedTo);
 
                     Long reestimatedId = reestimatedTicket.getReestimatedBy();
@@ -53,10 +52,6 @@ public class ReestimatedTicketService {
                     ReestimatedTicketResponseDTO reestimatedTicketResponseDTO= new ReestimatedTicketResponseDTO(newReestimatedTicket);
                     convertToUser(newReestimatedTicket, reestimatedTicketResponseDTO);
                     return reestimatedTicketResponseDTO;
-                } else {
-                    log.error("Reestimated Ticket Service : Ticket not found");
-                    throw new TicketNotFoundException("Ticket not found");
-                }
             } catch (Exception e) {
                 log.error("Reestimated Ticket Service : Failed to create reestimated ticket", e);
                 throw new ReestimationCreationException("Failed to create reestimated ticket. Please try again later.");
@@ -136,11 +131,11 @@ public class ReestimatedTicketService {
                     log.info("Reestimated Ticket Service : inside 2nd if");
                     updatedTicket.setStatus(reestimatedTicket.getStatus());
                     Long ticketId = updatedTicket.getTicket().getId();
-                    Ticket ticket = ticketRepository.findById(ticketId).orElse(null);
+                    Ticket ticket = ticketService.getTicketByIdTicket(ticketId);
                     if (ticket != null) {
                         log.info("Reestimated Ticket Service : inside 3rd if");
                         ticket.setEndDate(updatedTicket.getNewDate());
-                        ticketRepository.save(ticket);
+                        ticketService.saveTicket(ticket);
                     }
                 } else {
                     log.info("Reestimated Ticket Service : inside denied logic");
@@ -162,8 +157,8 @@ public class ReestimatedTicketService {
     }
 
     public void convertToUser(ReestimatedTicket ticket, ReestimatedTicketResponseDTO ticketResponseDto) {
-        User assignedTo = userRepository.findById(ticket.getAssignedTo()).get();
-        User reestimatedBy = userRepository.findById(ticket.getReestimatedBy()).get();
+        User assignedTo = userService.getUserById(ticket.getAssignedTo());
+        User reestimatedBy = userService.getUserById(ticket.getReestimatedBy());
         ticketResponseDto.setAssignedToName(new UserDto( assignedTo.getId(), assignedTo.getUserName(), assignedTo.getEmail()));
         ticketResponseDto.setReestimatedByName(new UserDto( reestimatedBy.getId(), reestimatedBy.getUserName(), reestimatedBy.getEmail()));
 

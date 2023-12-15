@@ -1,7 +1,7 @@
 package com.example.TicketModule.enums;
 
 public enum ConditionOnAction {
-    STAGE,
+    ID,
 
     PROJECT,
 

@@ -17,7 +17,7 @@ public class TriggerRequestDto {
 
     private DateTrigger dateTrigger;
 
-    private StageTrigger stageTrigger;
+    private IdTrigger idTrigger;
 
     private UserTrigger userTrigger;
 

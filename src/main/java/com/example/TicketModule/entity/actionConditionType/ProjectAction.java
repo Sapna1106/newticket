@@ -14,8 +14,6 @@ public class ProjectAction extends ActionCondition{
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String operation;
-
     private Long projectId;
 
     private Long stageId;
